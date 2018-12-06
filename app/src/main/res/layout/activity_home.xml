@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".HomeActivity">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+    <TextView
+        android:id="@+id/tv_get"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Get请求"
+        android:textColor="@android:color/white"
+        android:background="@drawable/shape_blue"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:padding="15dp" />
+    <View
+        android:layout_width="20dp"
+        android:layout_height="match_parent"/>
+    <TextView
+        android:id="@+id/tv_post"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Post请求"
+        android:textColor="@android:color/white"
+        android:background="@drawable/shape_blue"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:padding="15dp" />
+
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/tv_upload"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Upload"
+            android:textColor="@android:color/white"
+            android:background="@drawable/shape_blue"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:padding="15dp" />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/tv_download"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Download"
+            android:textColor="@android:color/white"
+            android:background="@drawable/shape_blue"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:padding="15dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/tv_json"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="上传json"
+            android:textColor="@android:color/white"
+            android:background="@drawable/shape_blue"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:padding="15dp" />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/tv_myApi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="MyApi"
+            android:textColor="@android:color/white"
+            android:background="@drawable/shape_blue"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:padding="15dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/tv_normal_get"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Normal_get"
+            android:textColor="@android:color/white"
+            android:background="@drawable/shape_blue"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:padding="15dp" />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/tv_normal_post"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Normal_Post"
+            android:textColor="@android:color/white"
+            android:background="@drawable/shape_blue"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:padding="15dp" />
+
+    </LinearLayout>
+</LinearLayout>
