@@ -1,5 +1,6 @@
 package com.huacheng.myretrofit;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import com.huacheng.myretrofit.http.download.DownloadCallBack;
 import com.huacheng.myretrofit.http.upload.FileUploadObserver;
 import com.huacheng.myretrofit.model.ModelCircleDetail;
 import com.huacheng.myretrofit.model.ModelItemBean;
+import com.huacheng.myretrofit.utils.TCFrequeControl;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * created by wangxiaotao
@@ -39,12 +43,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private SmallDialog smallDialog;
     private ProgressDialog progressDialog;
+    private RxPermissions rxPermission;
+    private TCFrequeControl frequeControl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         smallDialog = new SmallDialog(this);
+        rxPermission = new RxPermissions(HomeActivity.this);
         initView();
     }
 
@@ -73,11 +80,76 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.tv_upload:
                 initProgressDialog();
-                executeUpload();
+//                rxPermission.requestEach(
+//                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                                Manifest.permission.READ_EXTERNAL_STORAGE)
+//                        .subscribe(new Consumer<Permission>() {
+//                            @Override
+//                            public void accept(Permission permission) throws Exception {
+//                                if (permission.granted) {
+//                                    // 用户已经同意该权限
+//
+//                                    executeUpload();
+//                                } else if (permission.shouldShowRequestPermissionRationale) {
+//                                    // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
+//                                    Toast.makeText(HomeActivity.this, "权限拒绝", Toast.LENGTH_LONG).show();
+//                                } else {
+//                                    // 用户拒绝了该权限，并且选中『不再询问』
+//                                    Toast.makeText(HomeActivity.this, "权限拒绝[不再询问]", Toast.LENGTH_LONG).show();
+//                                }
+//                            }
+//                        });
+
+                rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                               Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isGranted) throws Exception {
+                        if (isGranted){
+                            executeUpload();
+                        }else {
+                            Toast.makeText(HomeActivity.this, "权限拒绝", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
                 break;
             case R.id.tv_download:
                 initProgressDialog();
-                executeDownload();
+
+//                rxPermission.requestEach(
+//                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                        Manifest.permission.READ_EXTERNAL_STORAGE)
+//                        .subscribe(new Consumer<Permission>() {
+//                            @Override
+//                            public void accept(Permission permission) throws Exception {
+//                                if (permission.granted) {
+//                                    // 用户已经同意该权限
+//                                    Log.e("retrofit", "permission.granted>>>>");
+//
+//                                } else if (permission.shouldShowRequestPermissionRationale) {
+//                                    // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
+//                                    Toast.makeText(HomeActivity.this, "权限拒绝", Toast.LENGTH_LONG).show();
+//                                } else {
+//                                    // 用户拒绝了该权限，并且选中『不再询问』
+//                                    Toast.makeText(HomeActivity.this, "权限拒绝[不再询问]", Toast.LENGTH_LONG).show();
+//                                }
+//                            }
+//                        });
+
+                rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isGranted) throws Exception {
+                        //多个权限只有都允许的情况下才为true
+                        if (isGranted){
+                         executeDownload();
+                            Log.e("retrofit", "permission.granted>>>>");
+                        }else {
+                            Toast.makeText(HomeActivity.this, "权限拒绝", Toast.LENGTH_LONG).show();
+                            Log.e("retrofit", "permission.granted>>>>");
+                        }
+                    }
+                });
+
                 break;
             case R.id.tv_json:
                 executeJson();
@@ -151,30 +223,50 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      * 执行下载
      */
     private void executeDownload() {
+        Log.e("retrofit", "executeDownload:>>>>");
         progressDialog.show();
         String url = "http://down.hui-shenghuo.cn/apk/HuiServers.apk";
         RetrofitClient.getInstance(HomeActivity.this).createBaseApi().myDownLoad(url, new DownloadCallBack() {
             @Override
-            public void onError(Throwable e) {
-                progressDialog.dismiss();
-                Toast.makeText(HomeActivity.this, e.getMessage()+"", Toast.LENGTH_LONG).show();
+            public void onError(final Throwable e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        Toast.makeText(HomeActivity.this, e.getMessage()+"", Toast.LENGTH_LONG).show();
+                    }
+                });
+
             }
 
             @Override
-            public void onSucess(String path, String name, long fileSize) {
-                progressDialog.dismiss();
-                Toast.makeText(HomeActivity.this, path+"", Toast.LENGTH_LONG).show();
+            public void onSucess(final String path, String name, long fileSize) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        Toast.makeText(HomeActivity.this, path+"", Toast.LENGTH_LONG).show();
+                    }
+                });
+
             }
 
             @Override
             public void onProgress(final long currentBytes, final long totalBytes) {
-                super.onProgress(currentBytes, totalBytes);
+                if(frequeControl==null){
+                    frequeControl= new TCFrequeControl();
+                    frequeControl.init(1,1.5f);
+                }
+                if (frequeControl.canTrigger()==false){
+                    return;
+                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         progressDialog.setTitle("");
                         progressDialog.setMessage("正在下载");
-                        progressDialog.setProgress((int) ((int) (currentBytes * 100 / totalBytes)));
+                        progressDialog.setProgress( ((int) (currentBytes * 100 / totalBytes)));
                     }
                 });
             }
@@ -400,4 +492,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                 });
     }
+    private void requestPermissions() {
+
+
+
+    }
+
+
 }

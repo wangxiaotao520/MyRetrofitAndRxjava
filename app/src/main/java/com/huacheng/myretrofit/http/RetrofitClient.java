@@ -30,7 +30,6 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Cache;
@@ -404,12 +403,19 @@ public class RetrofitClient {
 
         @Override
         public void onSubscribe(Disposable d) {
-
+            Log.e("retrofit", "Disposable:>>>>");
         }
 
         @Override
-        public void onNext(ResponseBody responseBody) {
-            //   DownLoadManager.getInstance(callBack).writeResponseBodyToDisk(mContext, (okhttp3.ResponseBody) responseBody);
+        public void onNext(final ResponseBody responseBody) {
+            Log.e("retrofit", "onNext:>>>>");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                     DownLoadManager.getInstance(callBack).writeResponseBodyToDisk(mContext, (okhttp3.ResponseBody) responseBody);
+                }
+            }).start();
+
 
         }
     }
@@ -485,30 +491,33 @@ public class RetrofitClient {
                 .build();
 
         this.apiService = retrofit.create(BaseApiService.class);
-//        apiService.downloadFile(url)
+        //
+//        apiService
+//                .downloadFile(url)
 //                .subscribeOn(Schedulers.io())
-//                .compose(transformerNormal())
+//                .unsubscribeOn(Schedulers.io())
+//                .map(new Function<ResponseBody, ResponseBody>() {
+//
+//                    @Override
+//                    public ResponseBody apply(ResponseBody responseBody) throws Exception {
+//                        return responseBody;
+//                    }
+//                }).observeOn(Schedulers.computation()) // 用于计算任务
+//                .doOnNext(new Consumer<ResponseBody>() {
+//                    @Override
+//                    public void accept(ResponseBody responseBody) throws Exception {
+//                        DownLoadManager.getInstance(callBack).writeResponseBodyToDisk(mContext, responseBody);
+//                    }
+//                })
+//                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe(new DownloadObserver<ResponseBody>(callBack));
-
-        apiService
-                .downloadFile(url)
+        //
+        apiService.downloadFile(url)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
-                .map(new Function<ResponseBody, ResponseBody>() {
-
-                    @Override
-                    public ResponseBody apply(ResponseBody responseBody) throws Exception {
-                        return responseBody;
-                    }
-                }).observeOn(Schedulers.computation()) // 用于计算任务
-                .doOnNext(new Consumer<ResponseBody>() {
-                    @Override
-                    public void accept(ResponseBody responseBody) throws Exception {
-                        DownLoadManager.getInstance(callBack).writeResponseBodyToDisk(mContext, responseBody);
-                    }
-                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DownloadObserver<ResponseBody>(callBack));
+
 
     }
 

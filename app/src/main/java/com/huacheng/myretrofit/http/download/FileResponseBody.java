@@ -68,7 +68,9 @@ public final class FileResponseBody<T> extends ResponseBody {
             public long read(Buffer sink, long byteCount) throws IOException {
                 long bytesRead = super.read(sink, byteCount);
                 totalBytesRead += bytesRead != -1 ? bytesRead : 0;
-                mCallback.onProgress(totalBytesRead, mResponseBody.contentLength());
+                if (bytesRead!=-1){
+                    mCallback.onProgress(totalBytesRead, mResponseBody.contentLength());
+                }
                 return bytesRead;
             }
         };

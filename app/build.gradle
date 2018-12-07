@@ -25,13 +25,19 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    /* - rxjava - */
     implementation 'io.reactivex.rxjava2:rxjava:2.1.0'
+    /* - 线程问题使用rxjava需要使用这个包 - */
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    /* - retrofit2使用gson需要添加这个包 - */
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     /* - 返回类型支持String - */
     implementation 'com.squareup.retrofit2:converter-scalars:2.0.0'
+    /* - retrofit2使用rxjava需要添加这个包 - */
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     implementation 'com.amitshekhar.android:rx2-android-networking:1.0.0'
     implementation 'com.google.code.gson:gson:2.6.2'
+    /*rxpermissions*/
+    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.3@aar'
 }
