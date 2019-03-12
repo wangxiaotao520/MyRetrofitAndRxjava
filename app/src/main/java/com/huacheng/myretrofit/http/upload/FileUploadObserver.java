@@ -44,13 +44,12 @@ public abstract class FileUploadObserver<T> implements Observer<T> {
     /**
      *
      * @param persent  每个图片的上传进度
-     * @param total_persent 总的上传进度
      */
-    public abstract void onProgress(int index,int persent,int  total_persent);
+    public abstract void onProgress(int persent);
 
     // 监听进度的改变
-    public void onProgressChange(int index,long bytesWritten, long contentLength) {
-      //  onProgress((int) (bytesWritten * 100 / contentLength));
+    public void onProgressChange(long bytesWritten, long contentLength) {
+     onProgress((int) (bytesWritten * 100 / contentLength));
 
     //    计算总进度
 //        if (this.index!=index){
@@ -73,24 +72,24 @@ public abstract class FileUploadObserver<T> implements Observer<T> {
 //            file_writen=bytesWritten;
 //        }
         //计算总进度
-        if (LASTSIZE==100){//TODO 这个方法一开始就被调用了图片的数量次真是乃格兰了，不知道为啥,后期再解决吧
-            LASTSIZE=0;
-            return;
-        }
-        int total_persent;
-        int percent = (int) (bytesWritten * 100 / contentLength);
-        if (percent > 100) percent = 100;
-        if (percent < 0) percent = 0;
-        if (percent == 100) {
-            LASTSIZE += percent / file_size;
-        }
+//        if (LASTSIZE==100){//TODO 这个方法一开始就被调用了图片的数量次真是乃格兰了，不知道为啥,后期再解决吧
+//            LASTSIZE=0;
+//            return;
+//        }
+//        int total_persent;
+//        int percent = (int) (bytesWritten * 100 / contentLength);
+//        if (percent > 100) percent = 100;
+//        if (percent < 0) percent = 0;
+//        if (percent == 100) {
+//            LASTSIZE += percent / file_size;
+//        }
+//
+//        if ((LASTSIZE + percent / file_size) > 100) {
+//            total_persent = 100;
+//        } else {
+//            total_persent = LASTSIZE + percent / file_size;
+//        }
 
-        if ((LASTSIZE + percent / file_size) > 100) {
-            total_persent = 100;
-        } else {
-            total_persent = LASTSIZE + percent / file_size;
-        }
-        onProgress(index, percent, total_persent);
     }
 
     /**

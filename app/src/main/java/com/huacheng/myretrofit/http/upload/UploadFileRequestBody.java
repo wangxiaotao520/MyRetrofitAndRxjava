@@ -19,11 +19,10 @@ public class UploadFileRequestBody extends RequestBody {
 
     private RequestBody mRequestBody;
     private FileUploadObserver<String> fileUploadObserver;
-    private int index;
 
-    public UploadFileRequestBody(int index,RequestBody requestBody, FileUploadObserver<String> fileUploadObserver) {
+    public UploadFileRequestBody(RequestBody requestBody, FileUploadObserver<String> fileUploadObserver) {
       //  this.mRequestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
-        this.index=index;
+
         this.mRequestBody=requestBody;
         this.fileUploadObserver = fileUploadObserver;
     }
@@ -69,7 +68,7 @@ public class UploadFileRequestBody extends RequestBody {
 
             bytesWritten += byteCount;
             if (fileUploadObserver != null) {
-                fileUploadObserver.onProgressChange(index,bytesWritten, contentLength());
+                fileUploadObserver.onProgressChange(bytesWritten, contentLength());
             }
 
         }

@@ -1,7 +1,5 @@
 package com.huacheng.myretrofit.model;
 
-import java.util.List;
-
 /**
  * Description:
  * created by wangxiaotao
@@ -24,7 +22,7 @@ public class ModelCircleDetail {
     private String img_size;
 
 
-    private List<ModelCircleDetail> reply_list;
+   // private List<ModelCircleDetail> reply_list;
     private String social_id;
     private String r_nickname;
     private String r_avatars;
@@ -147,13 +145,13 @@ public class ModelCircleDetail {
     }
 
 
-    public List<ModelCircleDetail> getReply_list() {
-        return reply_list;
-    }
-
-    public void setReply_list(List<ModelCircleDetail> reply_list) {
-        this.reply_list = reply_list;
-    }
+//    public List<ModelCircleDetail> getReply_list() {
+//        return reply_list;
+//    }
+//
+//    public void setReply_list(List<ModelCircleDetail> reply_list) {
+//        this.reply_list = reply_list;
+//    }
 
     public String getSocial_id() {
         return social_id;

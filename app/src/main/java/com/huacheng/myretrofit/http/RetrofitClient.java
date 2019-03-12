@@ -11,7 +11,7 @@ import com.huacheng.myretrofit.http.download.DownLoadManager;
 import com.huacheng.myretrofit.http.download.DownloadCallBack;
 import com.huacheng.myretrofit.http.download.FileResponseBody;
 import com.huacheng.myretrofit.http.upload.FileUploadObserver;
-import com.huacheng.myretrofit.http.upload.UploadFileRequestBody;
+import com.huacheng.myretrofit.http.upload.UpLoadProgressInterceptor;
 import com.huacheng.myretrofit.model.ModelCircleDetail;
 import com.huacheng.myretrofit.model.ModelItemBean;
 import com.huacheng.myretrofit.model.ModelSelectCommon;
@@ -139,8 +139,19 @@ public class RetrofitClient {
             Log.e("OKHttp", "Could not create http cache", e);
         }
         okHttpClient = new OkHttpClient.Builder()
-                .addNetworkInterceptor(
-                        new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addInterceptor(
+                        new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+                            @Override
+                            public void log(String message) {
+                                if (TextUtils.isEmpty(message)) return;
+                                String s = message.substring(0, 1);
+                                //如果收到响应是json才打印
+                                if ("{".equals(s) || "[".equals(s)) {
+                                    //TODO 打印log的地方
+                                  String json = message;
+                                }
+                            }
+                        }).setLevel(HttpLoggingInterceptor.Level.BODY))
                 .cookieJar(new NovateCookieManger(context))
                 .cache(cache)
                 .addInterceptor(new BaseInterceptor(headers))
@@ -155,7 +166,7 @@ public class RetrofitClient {
                 .client(okHttpClient)
                 .addConverterFactory(ScalarsConverterFactory.create())
                .addConverterFactory(GsonConverterFactory.create())
-                //  .addConverterFactory(ResponseConvertFactory.create())
+              //  .addConverterFactory(ResponseConvertFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(url)
                 .build();
@@ -235,8 +246,8 @@ public class RetrofitClient {
      */
     public void getPostData(Map parameters, Observer<ModelCircleDetail> observer) {
         //TODO 判断token是否为空
-        parameters.put("token", "e1f2c65fb1b961bef2eea76e98762e7a4a97c025");
-        parameters.put("tokenSecret", "f912f2378b66591c5715da72c5c0b7d2");
+        parameters.put("token", ApiHttpClient.TOKEN);
+        parameters.put("tokenSecret", ApiHttpClient.TOKEN_SECRET);
         apiService.getPostData(parameters)
                 .compose(schedulersTransformer())
                 .compose(transformer())
@@ -245,8 +256,8 @@ public class RetrofitClient {
 
     public void get(String url, Map parameters, Observer observer) {
         //TODO 判断token是否为空
-        parameters.put("token", "e1f2c65fb1b961bef2eea76e98762e7a4a97c025");
-        parameters.put("tokenSecret", "f912f2378b66591c5715da72c5c0b7d2");
+        parameters.put("token", ApiHttpClient.TOKEN);
+        parameters.put("tokenSecret", ApiHttpClient.TOKEN_SECRET);
         apiService.executeGet(url, parameters)
                 .compose(schedulersTransformer())
                 .compose(transformerNormal())
@@ -255,8 +266,9 @@ public class RetrofitClient {
 
     public void post(String url, Map<String, String> parameters, Observer<String> observer) {
         //TODO 判断token是否为空
-        parameters.put("token", "e1f2c65fb1b961bef2eea76e98762e7a4a97c025");
-        parameters.put("tokenSecret", "f912f2378b66591c5715da72c5c0b7d2");
+        parameters.put("token", ApiHttpClient.TOKEN);
+        parameters.put("tokenSecret", ApiHttpClient.TOKEN_SECRET);
+
         apiService.executePost(url, parameters)
                 .compose(schedulersTransformer())
                 .compose(transformerNormal())
@@ -427,8 +439,23 @@ public class RetrofitClient {
      * @param
      */
     public void myUpload(String url, Map<String, String> params, Map<String, File> files, FileUploadObserver<String> fileUploadObserver) {
-        params.put("token", "90634216b376f82ccb7c5551a99dd50d06980722");
-        params.put("tokenSecret", "ecd23e4fa41d71d95298c95be2d66e9b");
+
+        UpLoadProgressInterceptor interceptor = new UpLoadProgressInterceptor(fileUploadObserver);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .retryOnConnectionFailure(true)
+                .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(okHttpClient)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl(baseUrl)
+                .build();
+        this.apiService=retrofit.create(BaseApiService.class);
+        params.put("token", ApiHttpClient.TOKEN);
+        params.put("tokenSecret", ApiHttpClient.TOKEN_SECRET);
 
         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
@@ -442,25 +469,25 @@ public class RetrofitClient {
         //添加上传文件
         if (files != null && !files.isEmpty()) {
             RequestBody fileBody;
-            int index = 0;
+//            int index = 0;
             for (String key : files.keySet()) {
                 File file = files.get(key);
                 String fileName = file.getName();
                 fileBody = RequestBody.create(MediaType.parse(guessMimeType(fileName)), file);
-                //TODO 加了这么一条 ,这样获得的是每一个的进度
-                UploadFileRequestBody uploadFileRequestBody = new UploadFileRequestBody(index, fileBody, fileUploadObserver);
-                index++;
+//                //TODO 加了这么一条 ,这样获得的是每一个的进度
+//                UploadFileRequestBody uploadFileRequestBody = new UploadFileRequestBody( fileBody, fileUploadObserver);
+//                index++;
                 multipartBuilder.addPart(Headers.of("Content-Disposition",
                         "form-data; name=\"" + key + "\"; filename=\"" + fileName + "\""),
-                        uploadFileRequestBody);
+                        fileBody);
             }
         }
         //获取总长度
-        try {
-            fileUploadObserver.setAll_total_length(multipartBuilder.build().contentLength(), files.size());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            fileUploadObserver.setAll_total_length(multipartBuilder.build().contentLength(), files.size());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         apiService.uploadFile(url, multipartBuilder.build())
                 .compose(schedulersTransformer())
                 .compose(transformerNormal())
@@ -473,7 +500,7 @@ public class RetrofitClient {
      * @param url
      */
     public void myDownLoad(String url, final DownloadCallBack callBack) {
-        okHttpClient = new OkHttpClient.Builder()
+       OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {

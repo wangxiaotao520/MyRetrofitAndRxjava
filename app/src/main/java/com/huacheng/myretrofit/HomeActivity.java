@@ -53,6 +53,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         smallDialog = new SmallDialog(this);
         rxPermission = new RxPermissions(HomeActivity.this);
         initView();
+        ApiHttpClient.setTokenInfo("457704e558b4dda166699b2b7205c37400999652","5fa0ff809becf0a09932a9496b602ae5");
     }
 
     /**
@@ -226,7 +227,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Log.e("retrofit", "executeDownload:>>>>");
         progressDialog.show();
         String url = "http://down.hui-shenghuo.cn/apk/HuiServers.apk";
-        RetrofitClient.getInstance(HomeActivity.this).createBaseApi().myDownLoad(url, new DownloadCallBack() {
+        RetrofitClient.getInstance(HomeActivity.this).myDownLoad(url, new DownloadCallBack() {
             @Override
             public void onError(final Throwable e) {
                 runOnUiThread(new Runnable() {
@@ -307,21 +308,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      //   smallDialog.show();
         progressDialog.show();
         Map<String, String> params = new HashMap<String, String>();
-        params.put("community_id", "3");
+        params.put("community_id", "1");
         params.put("c_id", "130");
-        params.put("img_num", 4 + "");
+        params.put("img_num", 9 + "");
         params.put("content", "5oiR5rWL6K+V5LqG\n");
         ArrayList<File> files = new ArrayList<>();
 
-        for (int i1 = 0; i1 < 4; i1++) {
-            File file = new File("/storage/emulated/0/MagazineUnlock/magazine-unlock-01-2.3.1186-_B0B003B3BDA3801442EEABCDCC5CA3D4.jpg");
+        for (int i1 = 0; i1 < 9; i1++) {
+            File file = new File("/storage/emulated/0/DCIM/Camera/298fd0ad79be48b99946b7b52af89d96.jpg");
             files.add(file);
         }
         Map<String, File> params_files = new HashMap<String, File>();
-            for (int i1 = 0; i1 < 4; i1++) {
+            for (int i1 = 0; i1 < 9; i1++) {
                 params_files.put("img"+i1,files.get(i1));
             }
-        RetrofitClient.getInstance(HomeActivity.this).createBaseApi().myUpload("social/social_save/", params, params_files, new FileUploadObserver<String>() {
+        RetrofitClient.getInstance(HomeActivity.this).myUpload("social/social_save/", params, params_files, new FileUploadObserver<String>() {
             @Override
             public void onUploadSuccess(String responseBody) {
                 smallDialog.dismiss();
@@ -338,7 +339,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
-            public void onProgress(final int index, final int persent, int total_persent) {
+            public void onProgress(final int persent) {
                 //每个图片的上传的的进度
 //                runOnUiThread(new Runnable() {
 //                    @Override
@@ -351,7 +352,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //
 
               // 总的进度
-                progressDialog.setProgress((int) (total_persent));
+                progressDialog.setProgress((int) (persent));
             }
 
             @Override
@@ -369,7 +370,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         params.put("id", "532");
         params.put("is_pro", "0");
         smallDialog.show();
-        RetrofitClient.getInstance(HomeActivity.this).createBaseApi().post(ApiHttpClient.GET_HOUSETYPE
+        RetrofitClient.getInstance(HomeActivity.this).createBaseApi().post(ApiHttpClient.GET_DEFAULT
                 , params, new BaseObserver<String>(this) {
 
 
@@ -401,8 +402,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void executeNormalPost() {
         Map<String, String> params = new HashMap<String, String>();
-       params.put("id", "532");
-       params.put("is_pro", "0");
+        params.put("id", "532");
+        params.put("is_pro", "0");
         smallDialog.show();
         RetrofitClient.getInstance(HomeActivity.this).createBaseApi().getPostData(params, new BaseObserver<ModelCircleDetail>(this) {
 
@@ -492,11 +493,5 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                 });
     }
-    private void requestPermissions() {
-
-
-
-    }
-
 
 }
